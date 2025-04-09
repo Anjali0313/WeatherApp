@@ -59,8 +59,10 @@ main :nth-child(3){
 }
 .cloud{
   width:150px;
-filter: brightness(0) invert(1);
+  mix-blend-mode: multiply; 
+  
 }
+
 .drop{
   width: 40px;
   filter: brightness(0) invert(1);
@@ -92,9 +94,9 @@ filter: brightness(0) invert(1);
   overflow: scroll;
   scrollbar-width: none;
   display: flex;
-  justify-content: center;
+  gap:10px;
   align-items: center;
-  gap: 20px;
+
 
 }
 .cards>div{
@@ -102,9 +104,16 @@ filter: brightness(0) invert(1);
   border: 2px solid;
   width: 100px;
   height: 100px;
- 
+  display: flex;
+  flex-direction: column;
+  justify-content:center;
+  align-items:center;
 }
 .cards>div>img{
 width: 60px;
-filter: brightness(0) invert(1);
+mix-blend-mode: multiply; 
+}
+.month{
+  color: white;
+font-size: 14px;
 }
