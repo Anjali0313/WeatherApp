@@ -30,73 +30,23 @@ function renderMain(city = "City") {
   </div>
   </div>
   </div>
-  <div class="cards">
-    <div>
-      <div class="month"></div>
-      <img src="">
-    </div>
-    <div>
-      <div class="month"></div>
-      <img src="">
-    </div>
-    <div>
-      <div class="month"></div>
-      <img src="">
-    </div>
-    <div>
-      <div class="month"></div>
-      <img src="">
-    </div>
-    <div>
-      <div class="month"></div>
-      <img src="">
-    </div>
-    <div>
-      <div class="month"></div>
-      <img src="">
-    </div>
-    <div>
-      <div class="month"></div>
-      <img src="">
-    </div>
-    <div>
-      <div class="month"></div>
-      <img src="">
-    </div>
-  </div>
+  <div class="cards"></div>
 </div>`
 }
 document.querySelector("main").innerHTML = renderMain()
+
+function renderFullDate() {
 const date = new Date();
-
-
 const days = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"];
-const months = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "July", "Aug", "Sep", "Oct", "Nov", "Dec"
-];
-
-
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","July", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const dayName = days[date.getDay()];
 const dayNumber = date.getDate();
 const monthName = months[date.getMonth()];
-
-
-function renderFullDate() {
-  const fullDate = `${dayName}, ${dayNumber} ${monthName}`;
-  document.getElementById("Months").innerText = fullDate;
+const fullDate = `${dayName}, ${dayNumber} ${monthName}`;
+document.getElementById("Months").innerText = fullDate;
 }
+renderFullDate() 
 
-renderFullDate();
-const monthDivs = document.querySelectorAll(".month");
-const now = new Date();
-
-monthDivs.forEach((div, index) => {
-  const futureDate = new Date(now.getTime() + index * 24 * 60 * 60 * 1000); 
-  const day = futureDate.getDate();
-  const month = futureDate.toLocaleString('default', { month: 'short' }); 
-  div.innerText = `${day} ${month}`;
-});
 function searchWeather() {
   const city = document.querySelector(".search").value.trim();
   if (!city) return;
@@ -110,45 +60,61 @@ function searchWeather() {
       document.getElementById("Humidity").innerText = `${data.main.humidity}%`;
       document.getElementById("windspeed").innerText = `${data.wind.speed} M/S`;
       document.querySelector(".temp").innerText = `${data.main.temp}°C`;
-      const weatherIcon= document.querySelector('.cloud');
-      if (data.weather[0].main == "Clouds") {
-        weatherIcon.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGwe4OG61l8bNuOqGxsXmcVU_TaqCpXzBYrA&s";
-      }
-      else if (data.weather[0].main == "Clear") {
-        weatherIcon.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQArN53FgvGqwuWNJAMBmkq-JJeyRNjsN9OxQ&s";
-      }
-      else if (data.weather[0].main == "Rain") {
-        weatherIcon.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQ15CRH7o5KJsopKzLSWD7F3Sl3imzCmS51A&s";
-      }
-      else if (data.weather[0].main == "mist") {
-        weatherIcon.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQao1knWPPeceCQR8CwnUFs884ht2SHnl2mCQ&s";
-      }
-      else if (data.weather[0].main == "Drizzle") {
-        weatherIcon.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5jgYZtF2paZHz4RqBzeyRlzmOHGgqUjbsw&s";
+
+      const weatherIcon = document.querySelector(".cloud");
+      const condition = data.weather[0].main;
+      const icons = {
+        Clouds: "assets/clouds.png",
+        Clear: "assets/clear.png",
+        Rain: "assets/rain.png",
+        Drizzle: "assets/drizzle.png",
+        Mist: "assets/mist.png"
       };
-      const weatherIcons = document.querySelectorAll('.cards img');
-
-      let iconSrc = "";
-
-      if (data.weather[0].main === "Clouds") {
-        iconSrc = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGwe4OG61l8bNuOqGxsXmcVU_TaqCpXzBYrA&s";
-      } else if (data.weather[0].main === "Clear") {
-        iconSrc = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQArN53FgvGqwuWNJAMBmkq-JJeyRNjsN9OxQ&s";
-      } else if (data.weather[0].main === "Rain") {
-        iconSrc = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQ15CRH7o5KJsopKzLSWD7F3Sl3imzCmS51A&s";
-      } else if (data.weather[0].main === "Drizzle") {
-        iconSrc = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5jgYZtF2paZHz4RqBzeyRlzmOHGgqUjbsw&s";
-      }
- else if (data.weather[0].main == "mist") {
-        iconSrc= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQao1knWPPeceCQR8CwnUFs884ht2SHnl2mCQ&s";
-      } 
-      weatherIcons.forEach(icon => {
-        icon.src = iconSrc;
-      });
+      weatherIcon.src = icons[condition] || "assets/clouds.png";
+      renderHourlyForecast(city);
     })
     .catch((err) => console.error(err))
 }
+function renderHourlyForecast(city) {
+  const apiKey = "b438f16eb0c75fd741e0afc7fb8a53e3";
+  const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
 
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const hourlyCards = document.querySelector(".cards");
+      hourlyCards.innerHTML = ""; 
+
+      for (let i = 0; i < 8; i++) {
+        const forecast = data.list[i];
+        const time = new Date(forecast.dt_txt).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        const temp = Math.round(forecast.main.temp);
+        const condition = forecast.weather[0].main;
+
+    const icons = {
+      Clouds: "assets/clouds.png",
+      Clear: "assets/clear.png",
+      Rain: "assets/rain.png",
+      Drizzle: "assets/drizzle.png",
+      Mist: "assets/mist.png"
+    };
+    const icon = icons[condition] || "assets/clouds.png";
+
+        const cardHTML = `
+          <div class="hour-card">
+            <div class="month">${time}</div>
+            <img src="${icon}" alt="${forecast.weather[0].description}">
+            <div class="temps">${temp}°C</div>
+          </div>
+        `;
+        hourlyCards.innerHTML += cardHTML;
+      }
+    })
+    .catch(err => console.error("Forecast fetch error:", err));
+}
 document.querySelector(".search").addEventListener("keypress", (event) => {
   if (event.key === "Enter") {
     searchWeather();
@@ -156,8 +122,3 @@ document.querySelector(".search").addEventListener("keypress", (event) => {
 });
 document.querySelector(".search").value = "Noida";
 searchWeather();
-//https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQ15CRH7o5KJsopKzLSWD7F3Sl3imzCmS51A&s  for rain clouds
-//https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGwe4OG61l8bNuOqGxsXmcVU_TaqCpXzBYrA&s for clouds
-//https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQArN53FgvGqwuWNJAMBmkq-JJeyRNjsN9OxQ&s for clear clouds
-//https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5jgYZtF2paZHz4RqBzeyRlzmOHGgqUjbsw&s for Drizzle clouds
-//https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQao1knWPPeceCQR8CwnUFs884ht2SHnl2mCQ&s for mist clouds
